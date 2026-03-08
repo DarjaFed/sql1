@@ -1,19 +1,24 @@
 package page;
 
 import com.codeborne.selenide.SelenideElement;
+
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.$;
 
 public class LoginPage {
 
     private SelenideElement loginField = $("[data-test-id=login] input");
     private SelenideElement passwordField = $("[data-test-id=password] input");
-    private SelenideElement button = $("[data-test-id=action-login]");
+    private SelenideElement loginButton = $("[data-test-id=action-login]");
+    private SelenideElement verificationField = $("[data-test-id=code] input");
 
-    public VerificationPage login(String login, String password) {
+    public VerificationPage validLogin(String login, String password) {
 
         loginField.setValue(login);
         passwordField.setValue(password);
-        button.click();
+        loginButton.click();
+
+        verificationField.shouldBe(visible);
 
         return new VerificationPage();
     }

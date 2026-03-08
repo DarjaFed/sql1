@@ -2,15 +2,16 @@ package page;
 
 import com.codeborne.selenide.SelenideElement;
 
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
 
 public class DashboardPage {
 
-    private SelenideElement dashboardTitle =
+    private SelenideElement dashboard =
             $("[data-test-id=dashboard]");
 
-    public void checkDashboardVisible() {
-        dashboardTitle.shouldBe(com.codeborne.selenide.Condition.visible)
-                .shouldHave(com.codeborne.selenide.Condition.text("Личный кабинет"));
+    public void dashboardVisible() {
+        dashboard.shouldBe(visible)
+                .shouldHave(text("Личный кабинет"));
     }
 }

@@ -1,11 +1,10 @@
 package tests;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
-import data.DataHelper;
-import db.DbUtils;
 import page.DashboardPage;
 import page.LoginPage;
+import data.DataHelper;
+import data.DbUtils;
 
 import static com.codeborne.selenide.Selenide.open;
 
@@ -39,6 +38,6 @@ public class LoginTest {
         var dashboardPage =
                 verificationPage.verify(code);
 
-        dashboardPage.checkDashboardVisible();
+        dashboardPage.dashboardVisible();
     }
 }
