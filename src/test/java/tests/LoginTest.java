@@ -1,13 +1,20 @@
 package tests;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Test;
 import data.DataHelper;
 import db.DbUtils;
-import org.junit.jupiter.api.Test;
+import page.DashboardPage;
 import page.LoginPage;
 
 import static com.codeborne.selenide.Selenide.open;
 
 public class LoginTest {
+
+    @AfterAll
+    static void cleanDB() throws Exception {
+        DbUtils.cleanDatabase();
+    }
 
     @Test
     void shouldLoginSuccessfully() throws Exception {
@@ -18,8 +25,8 @@ public class LoginTest {
 
         var loginPage = new LoginPage();
 
-        var verifyPage =
-                loginPage.login(
+        var verificationPage =
+                loginPage.validLogin(
                         authInfo.getLogin(),
                         authInfo.getPassword()
                 );
@@ -29,6 +36,9 @@ public class LoginTest {
                         authInfo.getLogin()
                 );
 
-        verifyPage.verifyCode(code);
+        var dashboardPage =
+                verificationPage.verify(code);
+
+        dashboardPage.checkDashboardVisible();
     }
 }

@@ -28,11 +28,32 @@ public class DbUtils {
                             "WHERE login=? " +
                             "ORDER BY created DESC LIMIT 1";
 
-            return runner.query(conn,
+            return runner.query(
+                    conn,
                     codeSQL,
                     new ScalarHandler<>(),
                     login
             );
+        }
+    }
+
+    // метод очистки БД
+    public static void cleanDatabase() throws Exception {
+
+        var runner = new QueryRunner();
+
+        try (
+                Connection conn = DriverManager.getConnection(
+                        "jdbc:mysql://localhost:3306/app",
+                        "user",
+                        "pass"
+                )
+        ) {
+
+            runner.update(conn, "DELETE FROM auth_codes");
+            runner.update(conn, "DELETE FROM cards");
+            runner.update(conn, "DELETE FROM users");
+
         }
     }
 }
