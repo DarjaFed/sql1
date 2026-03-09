@@ -16,8 +16,8 @@ public class DbUtils {
 
         try (
                 Connection conn = DriverManager.getConnection(
-                        "jdbc:mysql://localhost:3306/app",
-                        "user",
+                        "jdbc:mysql://localhost:3306/app?useSSL=false&allowPublicKeyRetrieval=true",
+                        "app",
                         "pass"
                 )
         ) {
