@@ -37,23 +37,21 @@ public class DbUtils {
         }
     }
 
-    // метод очистки БД
+
     public static void cleanDatabase() throws Exception {
 
         var runner = new QueryRunner();
 
         try (
                 Connection conn = DriverManager.getConnection(
-                        "jdbc:mysql://localhost:3306/app",
-                        "user",
+                        "jdbc:mysql://localhost:3306/app?useSSL=false&allowPublicKeyRetrieval=true",
+                        "app",
                         "pass"
                 )
         ) {
 
             runner.update(conn, "DELETE FROM auth_codes");
-            runner.update(conn, "DELETE FROM cards");
-            runner.update(conn, "DELETE FROM users");
 
         }
+            }
     }
-}
