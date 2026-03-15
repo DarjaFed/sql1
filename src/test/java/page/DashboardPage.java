@@ -1,14 +1,18 @@
 package page;
 
-import static com.codeborne.selenide.Condition.visible;
+import com.codeborne.selenide.SelenideElement;
+
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
 
 public class DashboardPage {
 
-
-    private static final String DASHBOARD_CONTAINER = ".App_appContainer__3jRx1";
+    private SelenideElement heading = $("h2");
 
     public void dashboardVisible() {
-        $(DASHBOARD_CONTAINER).shouldBe(visible);
+
+        heading
+                .shouldBe(visible)
+                .shouldHave(text("Личный кабинет"));
     }
 }

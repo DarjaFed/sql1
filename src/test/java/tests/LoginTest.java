@@ -1,34 +1,45 @@
 package tests;
 
-import org.junit.jupiter.api.Test;
-import page.LoginPage;
-import page.DashboardPage;
 import data.DataHelper;
+import data.DbUtils;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Test;
+import page.DashboardPage;
+import page.LoginPage;
+import page.VerificationPage;
+
+import static com.codeborne.selenide.Selenide.open;
 
 public class LoginTest {
 
-    private static final String BASE_URL = "http://localhost:9999";
-
-    @Test
-    void shouldLoginSuccessfully() {
-        // Открываем страницу логина
-        LoginPage loginPage = new LoginPage(BASE_URL);
-
-        var authInfo = DataHelper.getAuthInfo();
-
-        // Валидный логин
-        loginPage.validLogin(authInfo.getLogin(), authInfo.getPassword());
-
-        // Проверка что главная страница (Dashboard) видна
-        DashboardPage dashboardPage = new DashboardPage();
-        dashboardPage.dashboardVisible();
+    @AfterAll
+    static void cleanDB() throws Exception {
+        DbUtils.cleanDatabase();
     }
 
     @Test
-    void shouldShowErrorForInvalidLogin() {
-        LoginPage loginPage = new LoginPage(BASE_URL);
+    void shouldLoginSuccessfully() throws Exception {
 
-        // Неверный пароль
-        loginPage.invalidLogin("vasya", "wrongpassword");
+        open("http://localhost:9999");
+
+        var authInfo = DataHelper.getAuthInfo();
+
+        var loginPage = new LoginPage();
+
+        VerificationPage verificationPage =
+                loginPage.validLogin(
+                        authInfo.getLogin(),
+                        authInfo.getPassword()
+                );
+
+        var code =
+                DbUtils.getVerificationCode(
+                        authInfo.getLogin()
+                );
+
+        DashboardPage dashboardPage =
+                verificationPage.verify(code);
+
+        dashboardPage.dashboardVisible();
     }
 }

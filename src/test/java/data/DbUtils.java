@@ -1,57 +1,43 @@
 package data;
 
-import org.apache.commons.dbutils.QueryRunner;
-import org.apache.commons.dbutils.handlers.ScalarHandler;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.*;
 
 public class DbUtils {
 
-    private DbUtils() {}
+    private static final String url = "jdbc:mysql://localhost:3306/app";
+    private static final String user = "app";
+    private static final String password = "pass";
 
-    public static String getVerificationCode(String login) throws Exception {
+    public static String getVerificationCode(String login) throws SQLException {
 
-        var runner = new QueryRunner();
-
-        try (
-                Connection conn = DriverManager.getConnection(
-                        "jdbc:mysql://localhost:3306/app?useSSL=false&allowPublicKeyRetrieval=true",
-                        "app",
-                        "pass"
-                )
-        ) {
-
-            String codeSQL =
-                    "SELECT code FROM auth_codes " +
-                            "JOIN users ON auth_codes.user_id = users.id " +
-                            "WHERE login=? " +
-                            "ORDER BY created DESC LIMIT 1";
-
-            return runner.query(
-                    conn,
-                    codeSQL,
-                    new ScalarHandler<>(),
-                    login
-            );
-        }
-    }
-
-
-    public static void cleanDatabase() throws Exception {
-
-        var runner = new QueryRunner();
+        String codeSQL =
+                "SELECT code FROM auth_codes " +
+                        "WHERE user_id = (SELECT id FROM users WHERE login = ?) " +
+                        "ORDER BY created DESC LIMIT 1";
 
         try (
-                Connection conn = DriverManager.getConnection(
-                        "jdbc:mysql://localhost:3306/app?useSSL=false&allowPublicKeyRetrieval=true",
-                        "app",
-                        "pass"
-                )
+                Connection conn = DriverManager.getConnection(url, user, password);
+                PreparedStatement stmt = conn.prepareStatement(codeSQL)
         ) {
+            stmt.setString(1, login);
 
-            runner.update(conn, "DELETE FROM auth_codes");
-
-        }
+            try (ResultSet rs = stmt.executeQuery()) {
+                rs.next();
+                return rs.getString("code");
             }
+        }
     }
+
+    public static void cleanDatabase() throws SQLException {
+
+        try (
+                Connection conn = DriverManager.getConnection(url, user, password);
+                Statement stmt = conn.createStatement()
+        ) {
+
+            stmt.executeUpdate("DELETE FROM auth_codes;");
+            stmt.executeUpdate("DELETE FROM cards;");
+            stmt.executeUpdate("DELETE FROM users;");
+        }
+    }
+}
